@@ -15,42 +15,52 @@
 -- You should have received a copy of the GNU Lesser General Public License
 -- along with slapperfishy. If not, see <https://www.gnu.org/licenses/>.
 
--- Private namespace for internal functions.
-local _slapperfishy = {}
-
---- Resolves item name aliases.
---- @param name string
---- @return string
-function _slapperfishy.resolve_alias(name)
-   return core.registered_aliases[name] or name
-end
+--------------------------------------------------------------------------------
+-- Fish Items                                                                 --
+--------------------------------------------------------------------------------
 
 --- Returns whether the mod with the given name is enabled.
 --- @param name string
 --- @return boolean
-function _slapperfishy.is_mod_enabled(name)
+local function is_mod_enabled(name)
    return nil ~= core.get_modpath(name)
 end
 
 -- TODO document
--- TODO conditionally add items if mods are enabled
-local fish_items = {
-   "mcl_buckets:bucket_axolotl",
-   "mcl_buckets:bucket_cod",
-   "mcl_buckets:bucket_salmon",
-   "mcl_buckets:bucket_tropical_fish",
-   "mcl_fishing:clownfish_raw",
-   "mcl_fishing:fish_cooked",
-   "mcl_fishing:fish_raw",
-   "mcl_fishing:salmon_cooked",
-   "mcl_fishing:salmon_raw",
-}
+local fish_items       = {}
+local spicy_fish_items = {}
 
--- TODO document
--- TODO conditionally add items if mods are enabled
-local spicy_fish_items = {
-   "mcl_fishing:pufferfish_raw",
-}
+if is_mod_enabled("mcl_fishing") then
+   table.insert_all(fish_items, {
+      "mcl_fishing:clownfish_raw",
+      "mcl_fishing:fish_cooked",
+      "mcl_fishing:fish_raw",
+      "mcl_fishing:salmon_cooked",
+      "mcl_fishing:salmon_raw",
+   })
+
+   table.insert(spicy_fish_items, "mcl_fishing:pufferfish_raw")
+end
+
+if is_mod_enabled("mcl_buckets") then
+   table.insert_all(fish_items, {
+      "mcl_buckets:bucket_axolotl",
+      "mcl_buckets:bucket_cod",
+      "mcl_buckets:bucket_salmon",
+      "mcl_buckets:bucket_tropical_fish",
+   })
+end
+
+--------------------------------------------------------------------------------
+-- Explosions                                                                 --
+--------------------------------------------------------------------------------
+
+--- Resolves item name aliases.
+--- @param name string
+--- @return string
+local function resolve_alias(name)
+   return core.registered_aliases[name] or name
+end
 
 -- TODO document
 -- TODO add lots of knockback
@@ -67,7 +77,7 @@ end
 local function on_punchplayer(player, hitter, _, _, _, _)
    if nil == hitter then return end
 
-   local weapon = _slapperfishy.resolve_alias(
+   local weapon = resolve_alias(
       hitter:get_wielded_item():get_name())
 
    try_explode(player, hitter, weapon)
@@ -85,8 +95,7 @@ if "mineclone2" ~= core.get_game_info().id then
       if "player" ~= reason.type then return end
 
       local puncher = reason.source
-      local weapon = _slapperfishy.resolve_alias(
-         puncher:get_wielded_item():get_name())
+      local weapon = resolve_alias(puncher:get_wielded_item():get_name())
 
       try_explode(object, puncher, weapon)
    end
