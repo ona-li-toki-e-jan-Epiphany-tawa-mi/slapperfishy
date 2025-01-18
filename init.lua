@@ -18,15 +18,6 @@
 -- Private namespace for internal functions.
 local _slapperfishy = {}
 
---- Loads and executes an Elephant Veins Lua module.
---- @param path string The file path of the module relative to the Elephant Veins
---- mod directory.
---- @return any The return value of the Lua module.
-function _slapperfishy.load_module(path)
-   return loadfile(
-      core.get_modpath("slapperfishy") .. "/" .. path)(_slapperfishy)
-end
-
 --- Resolves item name aliases.
 --- @param name string
 --- @return string
@@ -42,6 +33,7 @@ function _slapperfishy.is_mod_enabled(name)
 end
 
 -- TODO document
+-- TODO conditionally add items if mods are enabled
 local fish_items = {
    "mcl_buckets:bucket_axolotl",
    "mcl_buckets:bucket_cod",
@@ -55,23 +47,48 @@ local fish_items = {
 }
 
 -- TODO document
+-- TODO conditionally add items if mods are enabled
 local spicy_fish_items = {
    "mcl_fishing:pufferfish_raw",
 }
 
 -- TODO document
-local function on_damage(object, damage, reason)
-   if "player" ~= reason.type then return end
+-- TODO add lots of knockback
+local function try_explode(target, attacker, weapon_name)
+   local is_spicy = -1 ~= table.indexof(spicy_fish_items, weapon_name)
+   local is_fish = is_spicy or -1 ~= table.indexof(fish_items, weapon_name)
 
-   local puncher = reason.source
-   local weapon = _slapperfishy.resolve_alias(
-      puncher:get_wielded_item():get_name())
+   if not is_fish then return end
 
-   if -1 ~= table.indexof(fish_items, weapon) then
-      mcl_explosions.explode(object:get_pos(), 3, {}, puncher)
-   elseif -1 ~= table.indexof(spicy_fish_items, weapon) then
-      mcl_explosions.explode(object:get_pos(), 3, { fire = true }, puncher)
-   end
+   mcl_explosions.explode(target:get_pos(), 3, { fire = is_spicy }, attacker)
 end
 
-mcl_damage.register_on_damage(on_damage)
+-- TODO document
+local function on_punchplayer(player, hitter, _, _, _, _)
+   if nil == hitter then return end
+
+   local weapon = _slapperfishy.resolve_alias(
+      hitter:get_wielded_item():get_name())
+
+   try_explode(player, hitter, weapon)
+end
+core.register_on_punchplayer(on_punchplayer)
+
+-- In VoxeLibre https://content.luanti.org/packages/Wuzzy/mineclone2/,
+-- register_on_damage only runs the call back for players, whereas Mineclonia
+-- https://content.luanti.org/packages/ryvnf/mineclonia/ runs the callback for
+-- any entity that isn't a player, so we need to not register this on VoxeLibre
+-- to prevent double-explosions on players.
+if "mineclone2" ~= core.get_game_info().id then
+   -- TODO document
+   local function on_damage(object, _, reason)
+      if "player" ~= reason.type then return end
+
+      local puncher = reason.source
+      local weapon = _slapperfishy.resolve_alias(
+         puncher:get_wielded_item():get_name())
+
+      try_explode(object, puncher, weapon)
+   end
+   mcl_damage.register_on_damage(on_damage)
+end
