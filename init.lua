@@ -26,8 +26,11 @@ local function is_mod_enabled(name)
    return nil ~= core.get_modpath(name)
 end
 
--- TODO document
-local fish_items       = {}
+--- Fish items that can be used for explosive slapping.
+--- @type table<string>
+local fish_items = {}
+--- Fish items that can be used for explosive slapping with added heat.
+--- @type table<string>
 local spicy_fish_items = {}
 
 if is_mod_enabled("mcl_fishing") then
@@ -65,7 +68,11 @@ local function resolve_alias(name)
    return core.registered_aliases[name] or name
 end
 
--- TODO document
+--- Attempts to perform a fish slap explosion if the attacker wields a fish
+--- item.
+--- @param target Player
+--- @param attacker Player
+--- @param weapon_name string The resolved itemstring of the weapon.
 local function try_explode(target, attacker, weapon_name)
    local is_spicy = -1 ~= table.indexof(spicy_fish_items, weapon_name)
    local is_fish = is_spicy or -1 ~= table.indexof(fish_items, weapon_name)
@@ -81,15 +88,17 @@ local function try_explode(target, attacker, weapon_name)
    ))
 end
 
--- TODO document
-local function on_punchplayer(player, hitter, _, _, _, _)
+--- Attempts to perform an explosion when a player fish slaps another player.
+--- @param player Player
+--- @param hitter Player|nil
+local function explode_on_punchplayer(player, hitter, _, _, _, _)
    if nil == hitter then return end
 
    local weapon = resolve_alias(hitter:get_wielded_item():get_name())
 
    try_explode(player, hitter, weapon)
 end
-core.register_on_punchplayer(on_punchplayer)
+core.register_on_punchplayer(explode_on_punchplayer)
 
 -- In VoxeLibre https://content.luanti.org/packages/Wuzzy/mineclone2/,
 -- register_on_damage only runs the call back for players, whereas Mineclonia
@@ -97,8 +106,10 @@ core.register_on_punchplayer(on_punchplayer)
 -- any entity that isn't a player, so we need to not register this on VoxeLibre
 -- to prevent double-explosions on players.
 if "mineclone2" ~= core.get_game_info().id then
-   -- TODO document
-   local function on_damage(object, _, reason)
+   --- Attempts to perform an explosion when a player fish slaps an entity.
+   --- @param object ObjectRef
+   --- @param reason DamageReason
+   local function explode_on_damage(object, _, reason)
       if "player" ~= reason.type then return end
 
       local puncher = reason.source
@@ -106,5 +117,5 @@ if "mineclone2" ~= core.get_game_info().id then
 
       try_explode(object, puncher, weapon)
    end
-   mcl_damage.register_on_damage(on_damage)
+   mcl_damage.register_on_damage(explode_on_damage)
 end
