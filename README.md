@@ -1,3 +1,5 @@
+![screenshot](screenshot.png)
+
 # Slapperfishy
 
 A mod for Luanti [https://www.luanti.org](https://www.luanti.org/) that makes
