@@ -1,0 +1,12 @@
+{
+    "type": "MOD",
+    "title": "Slapperfishy",
+    "short_description": "High ordinance fish slapping. Hilarity ensues.",
+    "dev_state": "BETA",
+    "tags": [ "april_fools", "tools" ],
+    "license": "LGPL-3.0-or-later",
+    "media_license": "LGPL-3.0-or-later",
+    "repo": "https://github.com/ona-li-toki-e-jan-Epiphany-tawa-mi/slapperfishy",
+    "website": "https://github.com/ona-li-toki-e-jan-Epiphany-tawa-mi/slapperfishy",
+    "issue_tracker": "https://github.com/ona-li-toki-e-jan-Epiphany-tawa-mi/slapperfishy/issues"
+}
