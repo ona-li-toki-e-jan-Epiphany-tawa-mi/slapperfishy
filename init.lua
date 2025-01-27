@@ -55,6 +55,9 @@ end
 -- Explosions                                                                 --
 --------------------------------------------------------------------------------
 
+-- Multiplier to apply to the knockback of a fish slap.
+local knockback_multiplier = 100
+
 --- Resolves item name aliases.
 --- @param name string
 --- @return string
@@ -63,22 +66,26 @@ local function resolve_alias(name)
 end
 
 -- TODO document
--- TODO add lots of knockback
 local function try_explode(target, attacker, weapon_name)
    local is_spicy = -1 ~= table.indexof(spicy_fish_items, weapon_name)
    local is_fish = is_spicy or -1 ~= table.indexof(fish_items, weapon_name)
 
    if not is_fish then return end
 
-   mcl_explosions.explode(target:get_pos(), 3, { fire = is_spicy }, attacker)
+   local target_positon = target:get_pos()
+   mcl_explosions.explode(target_positon, 3, { fire = is_spicy }, attacker)
+   -- Extra knockback.
+   target:add_velocity(vector.multiply(
+      vector.direction(attacker:get_pos(), target_positon),
+      knockback_multiplier
+   ))
 end
 
 -- TODO document
 local function on_punchplayer(player, hitter, _, _, _, _)
    if nil == hitter then return end
 
-   local weapon = resolve_alias(
-      hitter:get_wielded_item():get_name())
+   local weapon = resolve_alias(hitter:get_wielded_item():get_name())
 
    try_explode(player, hitter, weapon)
 end
