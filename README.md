@@ -14,7 +14,10 @@ Note for VoxeLibre: fish slapping only works against other players.
 
 ## How to install
 
-You can place this directory, or symlink it, into the mods folder in your Luanti
+You can install it from ContentDB
+[https://content.luanti.org/packages/ona-li-toki-e-jan-Epiphany-tawa-mi/slapperfishy](https://content.luanti.org/packages/ona-li-toki-e-jan-Epiphany-tawa-mi/slapperfishy/).
+
+Or, you can place this directory, or symlink it, into the mods folder in your Luanti
 directory.
 
 ## How to test
