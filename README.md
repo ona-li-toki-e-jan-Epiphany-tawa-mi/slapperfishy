@@ -8,7 +8,7 @@ fish explosive when used as a melee weapon.
 Known to work with the following games:
 
 - Minetest Game - [https://content.luanti.org/packages/Minetest/minetest_game](https://content.luanti.org/packages/Minetest/minetest_game)
-- VoxeLibre [https://content.luanti.org/packages/Wuzzy/mineclone2](https://content.luanti.org/packages/Wuzzy/mineclone2)
+- VoxeLibre - [https://content.luanti.org/packages/Wuzzy/mineclone2](https://content.luanti.org/packages/Wuzzy/mineclone2)
 
 Note for VoxeLibre: fish slapping only works against other players.
 
